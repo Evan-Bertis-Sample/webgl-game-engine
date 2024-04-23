@@ -16,8 +16,13 @@ body {
     background-color: var(--light-primary);
     margin: 0;
     padding: 0;
-
+    /* hide the scrollbar */
+    scrollbar-width: none;
     overflow: hidden;
+}
+
+--webkit-scrollbar {
+    display: none;
 }
 
 .body-container {
@@ -34,7 +39,7 @@ body {
     /* shrink items to fit vertically */
     align-items: flex-start;
     overflow-x: hidden;
-    overflow-y: scroll;
+    overflow-y: hidden;
 }
 
 .body-container > *
