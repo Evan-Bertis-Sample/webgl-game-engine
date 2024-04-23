@@ -1,0 +1,93 @@
+:root {
+    --footer-radius: 5rem;
+}
+
+footer {
+    /* position such that it is always on the bottom right of the page, unless it's mobile */
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    margin: 3rem;
+    width: var(--footer-radius);
+    height: var(--footer-radius);
+    border-radius: calc(var(--footer-radius) / 2);
+    background-color: var(--dark-primary);
+    color: var(--light-primary);
+    transition: var(--transition-speed);
+    z-index: 999; /* Places the navbar on top of other elements */
+}
+
+footer:hover {
+    background-color: var(--dark-secondary);
+    width: calc(var(--footer-radius) * 4 + 2rem);
+}
+
+footer .footer-list {
+    position: absolute;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    border-radius: calc(var(--footer-radius) / 2);
+    gap: 0.25rem;
+    overflow: hidden;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+}
+
+footer .footer-item {
+    height: 100%;
+    width: auto;
+    transition: var(--transition-speed);
+    filter: opacity(0);
+    flex: 0 1 auto;
+    min-width: 0;
+}
+
+footer:hover .footer-item {
+    filter: opacity(1);
+}
+
+footer .footer-item .image-button {
+    height: 100%;
+    width: auto;
+    transition: var(--transition-speed);
+}
+
+footer .footer-logo {
+    position: absolute;
+    box-sizing: border-box;
+    height: 100%;
+    width: auto;
+    padding: 0.5rem;
+    border-radius: calc(var(--footer-radius) / 2);
+    transition: var(--transition-speed);
+    filter: opacity(1);
+}
+
+footer:hover .footer-logo {
+    filter: opacity(0);
+}
+
+/* Small screens -- hide everything */
+@media only screen and (max-width: 600px) {
+    footer {
+        display: none;
+    }
+
+    footer:hover {
+        display: none;
+    }
+
+    footer .footer-item {
+        display: none;
+    }
+
+    footer:hover .footer-item {
+        display: none;
+    }
+}

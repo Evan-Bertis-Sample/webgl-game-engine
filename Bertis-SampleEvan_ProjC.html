@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Project B</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="static/css/base.css" />
+    <link rel="stylesheet" href="static/css/footer.css" />
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700&display=swap" rel="stylesheet">
+
+</head>
+
+<body onload="main();">
+    <div class="webgl-container">
+        <canvas id="webgl">
+            Please use a browser that supports "canvas"
+        </canvas>
+    </div>
+
+    <div class="modal" id="controls">
+        <div class="modal-content">
+            <div class="modal-actions-container">
+                <h2>Controls</h2>
+
+                <div class="mini-button" onclick="hideModal()">
+                    <span class="close">&times;</span>
+                </div>
+            </div>
+
+            <h4>General</h4>
+            <ul>
+                <li>WASD to move</li>
+                <li>Space to Switch Camera Modes </li>
+            </ul>
+
+            <h4>Camera Modes</h4>
+
+            <ul>
+                <li>Follow: Camera follows the player. It is fixed to a preset rotation</li>
+                <li>Free: Camera moves independent of the player</li>
+                <ul>
+                    <li>WASD to move forward, left, back, right</li>
+                    <li>Q and E to move up and down</li>
+                    <li>Mouse Drag to look around</li>
+                </ul>
+            </ul>
+        </div>
+    </div>
+
+    <button class="control-button" onclick="showModal()">
+        Controls
+    </button>
+
+    <div class="body-container">
+        <div>
+            <div class="col-container">
+                <div class="info-col">
+
+                    <div class="subtitle-container">
+                        <b id="camera"> Camera Mode: Follow </b>
+                        <b id="fps"> FPS: 0 </b>
+                    </div>
+
+                    <h1>Project C: Better Lighting and Materials</h1>
+                    <h3>Evan Bertis-Sample</h3>
+                    <p>
+                        The final iteration of our space-world, this time complete with additional lights!
+                    </p>
+
+                    <div class="vector-container-align-left vertical-padding-small">
+                        <!-- Dropdown for choosing lighting type -->
+                        <div>
+                            <label for="lighting-type">Lighting Model</label>
+                            <select id="lighting-type" onchange="changeLightingType()">
+                                <option value="phong">Phong</option>
+                                <option value="blinn-phong">Blinn-Phong</option>
+                                <option value="gouraud">Gouraud (Phong Style)</option>
+                                <option value="blinn-gouraud">Gouraud (Blinn-Phong Style)</option>
+                                <option value="stylized"> Stylized </option>
+                            </select>
+                        </div>
+
+                        <!-- Dropdown for choosing ATT type -->
+                        <div>
+                            <label for="att-type">Attenuation</label>
+                            <select id="att-type" onchange="changeATT()">
+                                <option value="2">Polynomial</option> <!-- Default because I think it looks nice -->
+                                <option value="0">Linear (1/dist)</option>
+                                <option value="1">Quadratic (1/dist*dist)</option>
+                                <option value="3">None</option>
+                            </select>
+                        </div>
+
+                        <!-- Ability to turn off headlight -->
+                        <button id="headlight-button" onclick="toggleHeadlight()">
+                            Headlight Off
+                        </button>
+                    </div>
+
+                    <div class="vector-container-align-left vertical-padding-small">
+                        <!-- Drop down for material type for the central sphere -->
+                        <div>
+                            <label for="material-type">Central Sphere Material</label>
+                            <select id="material-type" onchange="changeMaterialType('central_sphere', 'material-type')">
+                                <option value="center_sphere">Default</option>
+                                <option value="red">Red</option>
+                                <option value="green">Green</option>
+                                <option value="blue">Blue</option>
+                                <option value="gray">Gray</option>
+                                <option value="black_hole_big">Black Hole</option>
+                                <option value="star">Star</option>
+                                <option value="crystal_blue">Blue Crystal</option>
+                                <option value="crystal_purple">Purple Crystal</option>
+                                <option value="crystal_pink">Pink Crystal</option>
+                                <option value="platform"> Platform </option>
+                            </select>
+                        </div>
+
+                        <!-- Drop down for material type for the central sphere -->
+                        <div>
+                            <label for="material-type-2">Black Hole Material</label>
+                            <select id="material-type-2" onchange="changeMaterialType('black_hole', 'material-type-2')">
+                                <option value="black_hole">Default</option>
+                                <option value="center_sphere">Shiny</option>
+                                <option value="red">Red</option>
+                                <option value="green">Green</option>
+                                <option value="blue">Blue</option>
+                                <option value="gray">Gray</option>
+                                <option value="star">Star</option>
+                                <option value="crystal_blue">Blue Crystal</option>
+                                <option value="crystal_purple">Purple Crystal</option>
+                                <option value="crystal_pink">Pink Crystal</option>
+                                <option value="platform"> Platform </option>
+                            </select>
+                        </div>
+
+                        <button id="invert-button" onclick="invertLightingSetting()">
+                            See Normals
+                        </button>
+            
+                    </div>
+
+                </div>
+
+                <div>
+                    <div class="vector-container-align-left">
+                        <b> Lighting Controls </b>
+                    </div>
+                    <!-- Vector 3 Input for position of light -->
+                    <!-- 3 floating point fields with sliders -->
+                    <div class="vector-container">
+                        <label>Point Light Position</label>
+
+                        <label for="light-position-x">X</label>
+                        <input type="range" id="light-position-x" min="-25" max="25" value="0" step="0.1" oninput="changeLightPosition()">
+                        <input type="number" id="light-position-x-number" value="0" step="0.1" oninput="changeLightPosition()">
+
+                        <label for="light-position-y">Y</label>
+                        <input type="range" id="light-position-y" min="-25" max="25" value="0" step="0.1" oninput="changeLightPosition()">
+                        <input type="number" id="light-position-y-number" value="0" step="0.1" oninput="changeLightPosition()">
+
+                        <label for="light-position-z">Z</label>
+                        <input type="range" id="light-position-z" min="-25" max="25" value="0" step="0.1" oninput="changeLightPosition()">
+                        <input type="number" id="light-position-z-number" value="0" step="0.1" oninput="changeLightPosition()">
+                    </div>
+
+                    <div class="vector-container">
+                        <!-- light intensity -->
+                        <label for="light-intensity">Point Light Intensity</label>
+                        <input type="range" id="light-intensity" min="0" max="10" value="10" step="0.1" oninput="changeLightIntensity()">
+                        <input type="number" id="light-intensity-number" value="10" step="0.1" oninput="changeLightIntensity()">
+
+                        <!-- active or not -->
+                        <label for="light-active">Active</label>
+                        <input type="checkbox" id="light-active" checked="true" onclick="setLightStatus()">
+                    </div>
+
+                    <div class="vector-container">
+                        <!-- light color -->
+                        <label>Point Light Diffuse Color</label>
+                        <label>R</label>
+                        <input type="range" id="diffuse-light-color-r" min="0" max="1" value="1" step="0.1" oninput="setDiffuseLightColor()">
+                        <label>G</label>
+                        <input type="range" id="diffuse-light-color-g" min="0" max="1" value="1" step="0.1" oninput="setDiffuseLightColor()">
+                        <label>B</label>
+                        <input type="range" id="diffuse-light-color-b" min="0" max="1" value="1" step="0.1" oninput="setDiffuseLightColor()">
+                    </div>
+                    
+                    <div class="vector-container">
+                        <!-- light color -->
+                        <label>Point Light Specular Color</label>
+                        <label>R</label>
+                        <input type="range" id="specular-light-color-r" min="0" max="1" value="1" step="0.1" oninput="setSpecularLightColor()">
+                        <label>G</label>
+                        <input type="range" id="specular-light-color-g" min="0" max="1" value="1" step="0.1" oninput="setSpecularLightColor()">
+                        <label>B</label>
+                        <input type="range" id="specular-light-color-b" min="0" max="1" value="1" step="0.1" oninput="setSpecularLightColor()">
+                    </div>
+
+                    <b>Ambient Light</b>
+
+                    <div class="vector-container">
+                        <!-- light color -->
+                        <label>Global Ambient Color</label>
+                        <label>R</label>
+                        <input type="range" id="ambient-light-color-r" min="0" max="1" value="1" step="0.1" oninput="setAmbientLightColor()">
+                        <label>G</label>
+                        <input type="range" id="ambient-light-color-g" min="0" max="1" value="1" step="0.1" oninput="setAmbientLightColor()">
+                        <label>B</label>
+                        <input type="range" id="ambient-light-color-b" min="0" max="1" value="1" step="0.1" oninput="setAmbientLightColor()">
+                    </div>
+
+                    <div class="vector-container">
+                        <label for="ambient-light-intensity">Ambient Light Intensity</label>
+                        <input type="range" id="ambient-light-intensity" min="0" max="2" value="1" step="0.05" oninput="setAmbientLightIntensity()">
+                        <input type="number" id="ambient-light-intensity-number" value="1" step="0.05" oninput="setAmbientLightIntensity()">
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="lib/webgl-utils.js"></script>
+    <script src="lib/webgl-debug.js"></script>
+    <script src="lib/cuon-utils.js"></script>
+    <script src="lib/cuon-matrix-quat03.js"></script>
+
+    <!-- Static Files/File Loading-->
+    <script src="engine/static.js"></script>
+    <script src="engine/file.js"></script>
+
+    <!-- Modules -->
+    <script src="engine/material.js"></script>
+    <script src="engine/mesh.js"></script>
+    <script src="engine/scene_graph.js"></script>
+    <script src="engine/scene.js"></script>
+    <script src="engine/input.js"></script>
+    <script src="engine/ecs.js"></script>
+    <script src="engine/lighting.js"></script>
+    <script src="engine/config.js"></script>
+
+    <!-- Entry point, defer it-->
+    <script src="Bertis-SampleEvan_ProjC.js" defer></script>
+
+    <!-- Controls points-->
+    <script>
+        function invertLightingSetting() {
+            console.log("Toggling lighting");
+            if (c_ENABLE_LIGHTING == 1.0) {
+                c_ENABLE_LIGHTING = 0.0;
+            }
+            else {
+                c_ENABLE_LIGHTING = 1.0;
+            }
+
+            g_materialRegistry.setGlobalParam("u_enable_lighting", c_ENABLE_LIGHTING);
+
+            // set the button text
+            let button = document.getElementById("invert-button");
+            if (c_ENABLE_LIGHTING == 1.0) {
+                button.innerHTML = "See Normals";
+            }
+            else {
+                button.innerHTML = "See Lighting";
+            }
+        }
+
+        function showModal() {
+            var modal = document.getElementById("controls");
+            modal.style.display = "block";
+        }
+
+        function hideModal() {
+            var modal = document.getElementById("controls");
+            modal.style.display = "none";
+        }
+
+        function changeLightPosition()
+        {
+            var x = document.getElementById("light-position-x").value;
+            var y = document.getElementById("light-position-y").value;
+            var z = document.getElementById("light-position-z").value;
+
+            document.getElementById("light-position-x-number").value = x;
+            document.getElementById("light-position-y-number").value = y;
+            document.getElementById("light-position-z-number").value = z;
+
+            let position = new Vector3([x, z, -y]);
+            let light = g_lightRegistry.getLight(0)
+
+            light.position = position;
+        }
+
+        function changeLightIntensity()
+        {
+            var intensity = document.getElementById("light-intensity").value;
+            document.getElementById("light-intensity-number").value = intensity;
+
+            let light = g_lightRegistry.getLight(0)
+            light.intensity = intensity;
+        }
+
+        function setLightStatus()
+        {
+            let light = g_lightRegistry.getLight(0)
+            light.active = !light.active;
+        }
+
+        function setDiffuseLightColor()
+        {
+            let r = document.getElementById("diffuse-light-color-r").value;
+            let g = document.getElementById("diffuse-light-color-g").value;
+            let b = document.getElementById("diffuse-light-color-b").value;
+            let light = g_lightRegistry.getLight(0)
+            light.diffuseColor = new Vector3([r, g, b]);
+        }
+
+        function setSpecularLightColor()
+        {
+            let r = document.getElementById("specular-light-color-r").value;
+            let g = document.getElementById("specular-light-color-g").value;
+            let b = document.getElementById("specular-light-color-b").value;
+            let light = g_lightRegistry.getLight(0)
+            console.log("Setting specular color to: " + r + " " + g + " " + b);
+            light.specularColor = new Vector3([r, g, b]);
+        }
+
+        function setAmbientLightColor()
+        {
+            let r = document.getElementById("ambient-light-color-r").value;
+            let g = document.getElementById("ambient-light-color-g").value;
+            let b = document.getElementById("ambient-light-color-b").value;
+            g_lightRegistry.ambientLight = new Vector3([r, g, b]);
+        }
+
+        function setAmbientLightIntensity()
+        {
+            let intensity = document.getElementById("ambient-light-intensity").value;
+            g_lightRegistry.ambientLightIntensity = intensity;
+
+            let label = document.getElementById("ambient-light-intensity-number");
+            label.value = intensity;
+        }
+
+        function changeATT()
+        {
+            var e = document.getElementById("att-type");
+            var value = e.options[e.selectedIndex].value;
+            // make sure to convert to a int
+            console.log("Changing ATT to: " + value);
+
+            const set = (light) => light.attenuationFunction = value;
+
+            g_lightRegistry.foreachLight(set);
+        }
+
+        function toggleHeadlight()
+        {
+            // fetch the light
+            let entity = g_ecs.getEntity("look_at_object");
+            let lightComponent = entity.getComponent(LightComponent);
+
+            let light = lightComponent.light;
+
+            if (light.active) {
+                light.active = false;
+                document.getElementById("headlight-button").innerHTML = "Headlight On";
+            }
+            else {
+                light.active = true;
+                document.getElementById("headlight-button").innerHTML = "Headlight Off";
+            }
+        }
+
+        function changeMaterialType(entityName, selectID)
+        {
+            let material = document.getElementById(selectID).value;
+            // find the entity
+            let entity = g_ecs.getEntity(entityName);
+            entity.node.renderInfo.material = material;
+        }
+
+        function setupLightingControls()
+        {
+            let position = g_lightRegistry.getLight(0).position;
+            position = new Vector3([position.elements[0], -position.elements[2], position.elements[1]]);
+
+            document.getElementById("light-position-x").value = position.elements[0];
+            document.getElementById("light-position-y").value = position.elements[1];
+            document.getElementById("light-position-z").value = position.elements[2];
+
+            document.getElementById("light-position-x-number").value = position.elements[0];
+            document.getElementById("light-position-y-number").value = position.elements[1];
+            document.getElementById("light-position-z-number").value = position.elements[2];
+
+
+            document.getElementById("light-intensity").value = g_lightRegistry.getLight(0).intensity;
+            document.getElementById("light-intensity-number").value = g_lightRegistry.getLight(0).intensity;
+
+            document.getElementById("light-active").checked = g_lightRegistry.getLight(0).active;
+
+            let diffuseColor = g_lightRegistry.getLight(0).diffuseColor;
+            document.getElementById("diffuse-light-color-r").value = diffuseColor.elements[0];
+            document.getElementById("diffuse-light-color-g").value = diffuseColor.elements[1];
+            document.getElementById("diffuse-light-color-b").value = diffuseColor.elements[2];
+
+            let specularColor = g_lightRegistry.getLight(0).specularColor;
+            document.getElementById("specular-light-color-r").value = specularColor.elements[0];
+            document.getElementById("specular-light-color-g").value = specularColor.elements[1];
+            document.getElementById("specular-light-color-b").value = specularColor.elements[2];
+
+            let ambientLight = g_lightRegistry.ambientLight;
+            document.getElementById("ambient-light-color-r").value = ambientLight.elements[0];
+            document.getElementById("ambient-light-color-g").value = ambientLight.elements[1];
+            document.getElementById("ambient-light-color-b").value = ambientLight.elements[2];
+
+            document.getElementById("ambient-light-intensity").value = g_lightRegistry.ambientLightIntensity;
+            document.getElementById("ambient-light-intensity-number").value = g_lightRegistry.ambientLightIntensity;
+        }
+
+        async function changeLightingType() {
+            var e = document.getElementById("lighting-type");
+            var value = e.options[e.selectedIndex].value;
+            console.log("Changing lighting type to: " + value);
+            await g_materialRegistry.setGlobalShader(value)
+        }
+
+        // add a listener for when the user clicks outside of the modal
+        window.onclick = function (event) {
+            var modal = document.getElementById("controls");
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+
+    </script>
+    </div>
+</body>
+
+</html>
